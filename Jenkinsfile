@@ -32,7 +32,7 @@ i
             steps {
                 sh """
                 docker rm -f youtube-api || true
-                docker run -d --name youtube-api -p 3001:3001 ${DOCKER_IMAGE}
+                docker run -d --name youtube-api -p 3000:8080 ${DOCKER_IMAGE}
                 """
             }
         }
