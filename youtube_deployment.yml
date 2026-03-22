@@ -17,6 +17,7 @@ spec:
       containers:
         - name: youtube-container
           image: sriramyaganni/youtube-webapp:latest
+              imagePullPolicy: Always
           ports:
             - containerPort: 3000
 ---
