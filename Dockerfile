@@ -1,23 +1,27 @@
-# Stage 1: Build Stage
-FROM node:18-alpine AS builder
+# -------- Stage 1: Build --------
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Copy package files first
 COPY package*.json ./
 
-RUN npm install
+# Install dependencies
+RUN npm install --production
 
+# Copy source code
 COPY . .
 
-# Stage 2: Production Stage
-FROM node:18-alpine
+# -------- Stage 2: Run --------
+FROM node:20-alpine
 
 WORKDIR /app
 
+# Copy built app from builder
 COPY --from=builder /app /app
 
-EXPOSE 3001
+# Expose port
+EXPOSE 3000
 
-CMD ["npm","run","dev"]
-
-
+# Start Node.js app
+CMD ["node", "index.js"]

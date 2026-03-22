@@ -1,40 +1,42 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKER_IMAGE = "sriramyaganni/youtube-webapp:v1"
-        DOCKER_CREDENTIALS = credentials('docker-hub')
-    }
-
     stages {
 
-        stage('Checkout') {
+        stage('Checkout Code') {
             steps {
-   		checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[credentialsId: 'Sriramya', url: 'https://github.com/SriramyaGanni/youtube-nodejs-api.git']])
+                git branch: 'master',
+                    credentialsId: 'git-creds',
+                    url: 'https://github.com/SriramyaGanni/youtube-nodejs-api.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm install'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE} ."
-            }
-        }
-i
-        stage('Push Docker Image') {
-            steps {
-                withDockerRegistry([credentialsId: 'docker-hub', url: 'https://index.docker.io/v1/']) {
-                    sh "docker push ${DOCKER_IMAGE}"
-                }
+                sh 'docker build -t sriramyaganni/youtube-webapp:latest .'
             }
         }
 
-        stage('Deploy Local Container') {
+        stage('Docker Login & Push') {
             steps {
-                sh """
-                docker rm -f youtube-api || true
-                docker run -d --name youtube-api -p 3000:8080 ${DOCKER_IMAGE}
-                """
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh 'echo $PASS | docker login -u $USER --password-stdin'
+                    sh 'docker push sriramyaganni/youtube-webapp:latest'
+                            }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                sh 'kubectl apply -f youtube_deployment.yml'
             }
         }
     }
 }
+                                  
