@@ -1,25 +1,12 @@
-# Stage 1: Build
-FROM node:20-alpine AS builder
-
-WORKDIR /app
-
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install --production
-
-# Copy all source code
-COPY . .
-
-# Stage 2: Run
 FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy built app from builder
-COPY --from=builder /app /app
+COPY package*.json ./
+RUN npm install
 
-# Expose port
+COPY . .
+
 EXPOSE 3000
 
-# Start Node.js app
 CMD ["node", "app.js"]
