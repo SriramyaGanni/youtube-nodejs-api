@@ -20,6 +20,16 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
+
+          # IMPORTANT: Environment Variables
+          env:
+            - name: PORT
+              value: "3000"
+            - name: NODE_ENV
+              value: "development"
+            - name: MONGO_URI
+              value: "mongodb://localhost:27017/test"   # 👉 replace with your real DB
+
 ---
 apiVersion: v1
 kind: Service
