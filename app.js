@@ -94,13 +94,12 @@ app.use(versionOne('search'), searchRoutes)
 
 app.use(errorHandler)
 
-const PORT = process.env.PORT
+const port = process.env.PORT || 3000;
 
-const server = app.listen(PORT, () => {
-	console.log(
-		`We are live on ${process.env.NODE_ENV} mode on port ${PORT}`.yellow.bold
-	)
-})
+// Change this:
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server running on port ${port}`);
+});
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err, promise) => {
